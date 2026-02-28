@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мини Википедия</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+            border: 2px solid white;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .search-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #f5576c;
+            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+        }
+
+        .search-btn {
+            padding: 15px 30px;
+            background: #f5576c;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .search-btn:hover {
+            background: #e0485c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .search-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .results-section {
+            margin-top: 30px;
+        }
+
+        .results-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .result-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .result-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-content {
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #f5576c;
+            margin-bottom: 10px;
+        }
+
+        .result-snippet {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-download-small {
+            background: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-download-small:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-download-small:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .bulk-actions {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 10px;
+            border: 1px solid #ffc107;
+        }
+
+        .bulk-actions button {
+            margin-right: 10px;
+        }
+
+        .article-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .article-content {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .article-title {
+            font-size: 2em;
+            color: #f5576c;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .article-text {
+            white-space: pre-wrap;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .article-text p {
+            margin-bottom: 15px;
+        }
+
+        .article-link {
+            color: #f5576c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .article-link:hover {
+            text-decoration: underline;
+        }
+
+        .load-full-btn {
+            background: #17a2b8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+            transition: all 0.3s;
+        }
+
+        .load-full-btn:hover {
+            background: #138496;
+            transform: translateY(-2px);
+        }
+
+        .article-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-download {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Мини Википедия</h1>
+            <p>Поиск и скачивание статей из Wikipedia</p>
+            <a href="/" class="back-btn">← Назад к файловому серверу</a>
+        </div>
+        <div class="content">
+            <div class="search-section">
+                <h2>Поиск и загрузка статей</h2>
+                <div style="margin-bottom: 20px;">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Введите запрос для поиска..." onkeypress="handleKeyPress(event)">
+                        <button onclick="searchArticles()" class="search-btn" id="searchBtn">Поиск</button>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e9ecef;">
+                    <h3 style="margin-bottom: 15px; color: #333;">Или загрузите статью по URL</h3>
+                    <div class="search-box">
+                        <input type="text" id="urlInput" class="search-input" placeholder="https://ru.wikipedia.org/wiki/Название_статьи" onkeypress="handleUrlKeyPress(event)">
+                        <button onclick="loadArticleByUrl()" class="search-btn" id="loadUrlBtn">Загрузить</button>
+                    </div>
+                </div>
+                <div id="message" class="message"></div>
+            </div>
+
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <h2>Результаты поиска</h2>
+                <div id="bulkActions" class="bulk-actions" style="display: none;">
+                    <button onclick="downloadAllArticles()" class="btn btn-download" id="downloadAllBtn">Скачать все статьи</button>
+                    <span id="selectedCount"></span>
+                </div>
+                <div id="resultsList" class="results-list"></div>
+            </div>
+
+            <div class="results-section" id="savedSection" style="display: none; margin-top: 30px;">
+                <h2>Сохраненные статьи</h2>
+                <div id="savedList" class="results-list"></div>
+            </div>
+
+            <div class="article-section" id="articleSection">
+                <div class="article-content">
+                    <h1 class="article-title" id="articleTitle"></h1>
+                    <div class="article-text" id="articleText"></div>
+                    <div class="article-actions">
+                        <button onclick="downloadArticle()" class="btn btn-download" id="downloadBtn">Скачать статью</button>
+                        <button onclick="loadFullArticle()" class="load-full-btn" id="loadFullBtn">Загрузить полный текст</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentArticle = null;
+        let searchResults = [];
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                searchArticles();
+            }
+        }
+
+        function handleUrlKeyPress(event) {
+            if (event.key === 'Enter') {
+                loadArticleByUrl();
+            }
+        }
+
+        async function loadArticleByUrl() {
+            const url = document.getElementById('urlInput').value.trim();
+            if (!url) {
+                showMessage('Введите URL статьи', 'error');
+                return;
+            }
+
+            const loadUrlBtn = document.getElementById('loadUrlBtn');
+            loadUrlBtn.disabled = true;
+            loadUrlBtn.textContent = 'Загрузка...';
+
+            try {
+                const response = await fetch('/api/wikipedia/load-url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(`Статья "${data.title}" успешно загружена!`, 'success');
+                    document.getElementById('urlInput').value = '';
+                    // Автоматически скачиваем файл
+                    setTimeout(() => {
+                        window.location.href = data.downloadUrl;
+                    }, 500);
+                    loadSavedArticles();
+                    // Загружаем статью для просмотра
+                    loadArticle(data.title);
+                } else {
+                    showMessage(data.error || 'Ошибка при загрузке статьи', 'error');
+                }
+            } catch (error) {
+                showMessage('Ошибка при загрузке статьи', 'error');
+            } finally {
+                loadUrlBtn.disabled = false;
+                loadUrlBtn.textContent = 'Загрузить';
+            }
+        }
+
+        async function searchArticles() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) {
+                showMessage('Введите запрос для поиска', 'error');
+                return;
+            }
+
+            const searchBtn = document.getElementById('searchBtn');
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsList = document.getElementById('resultsList');
+            const articleSection = document.getElementById('articleSection');
+            const bulkActions = document.getElementById('bulkActions');
+
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Поиск...';
+            resultsList.innerHTML = '<div class="loading">Поиск статей...</div>';
+            resultsSection.style.display = 'block';
+            articleSection.style.display = 'none';
+            bulkActions.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/wikipedia/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (data.query && data.query.search && data.query.search.length > 0) {
+                    searchResults = data.query.search;
+                    resultsList.innerHTML = searchResults.map((item, index) => `
+                        <div class="result-item" onclick="loadArticle('${item.title.replace(/'/g, "\\'")}')">
+                            <div class="result-content">
+                                <div class="result-title">${item.title}</div>
+                                <div class="result-snippet">${item.snippet}...</div>
+                            </div>
+                            <div class="result-actions">
+                                <button onclick="event.stopPropagation(); downloadArticleDirect('${item.title.replace(/'/g, "\\'")}', ${index})" class="btn-download-small" id="downloadBtn_${index}">
+                                    📥 Скачать
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                    bulkActions.style.display = 'block';
+                    updateSelectedCount();
+                } else {
+                    resultsList.innerHTML = '<div class="empty">Ничего не найдено</div>';
+                    bulkActions.style.display = 'none';
+                }
+            } catch (error) {
+                resultsList.innerHTML = '<div class="empty">Ошибка при поиске</div>';
+                showMessage('Ошибка при поиске статей', 'error');
+                bulkActions.style.display = 'none';
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Поиск';
+            }
+        }
+
+        function updateSelectedCount() {
+            const count = searchResults.length;
+            document.getElementById('selectedCount').textContent = `Найдено статей: ${count}`;
+        }
+
+        async function downloadArticleDirect(title, index) {
+            const btn = document.getElementById(`downloadBtn_${index}`);
+            if (!btn) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Сохранение...';
+
+            try {
+                const response = await fetch(`/api/wikipedia/download?title=${encodeURIComponent(title)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(`Статья "${title}" успешно сохранена!`, 'success');
+                    btn.textContent = '✓ Скачано';
+                    // Автоматически скачиваем файл
+                    setTimeout(() => {
+                        window.location.href = data.downloadUrl;
+                    }, 500);
+                    loadSavedArticles();
+                } else {
+                    showMessage(data.error || 'Ошибка при сохранении статьи', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '📥 Скачать';
+                }
+            } catch (error) {
+                showMessage('Ошибка при сохранении статьи', 'error');
+                btn.disabled = false;
+                btn.textContent = '📥 Скачать';
+            }
+        }
+
+        async function downloadAllArticles() {
+            if (searchResults.length === 0) {
+                showMessage('Нет статей для скачивания', 'error');
+                return;
+            }
+
+            const downloadAllBtn = document.getElementById('downloadAllBtn');
+            downloadAllBtn.disabled = true;
+            downloadAllBtn.textContent = 'Скачивание...';
+
+            let successCount = 0;
+            let errorCount = 0;
+
+            for (let i = 0; i < searchResults.length; i++) {
+                const item = searchResults[i];
+                try {
+                    const response = await fetch(`/api/wikipedia/download?title=${encodeURIComponent(item.title)}`);
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        successCount++;
+                        // Обновляем кнопку
+                        const btn = document.getElementById(`downloadBtn_${i}`);
+                        if (btn) {
+                            btn.textContent = '✓ Скачано';
+                            btn.disabled = true;
+                        }
+                    } else {
+                        errorCount++;
+                    }
+                } catch (error) {
+                    errorCount++;
+                }
+            }
+
+            showMessage(`Скачано статей: ${successCount}${errorCount > 0 ? `, ошибок: ${errorCount}` : ''}`, successCount > 0 ? 'success' : 'error');
+            downloadAllBtn.disabled = false;
+            downloadAllBtn.textContent = 'Скачать все статьи';
+            loadSavedArticles();
+        }
+
+        async function loadSavedArticles() {
+            try {
+                const response = await fetch('/api/wikipedia/files');
+                const files = await response.json();
+
+                const savedSection = document.getElementById('savedSection');
+                const savedList = document.getElementById('savedList');
+
+                if (files.length === 0) {
+                    savedSection.style.display = 'none';
+                    return;
+                }
+
+                savedSection.style.display = 'block';
+                savedList.innerHTML = files.map(file => {
+                    const articleTitle = file.name.replace(/_/g, ' ').replace(/\.txt$/, '');
+                    return `
+                    <div class="result-item" onclick="loadArticle('${articleTitle.replace(/'/g, "\\'")}')">
+                        <div class="result-content">
+                            <div class="result-title">${articleTitle}</div>
+                            <div class="result-snippet">
+                                Размер: ${formatFileSize(file.size)} | 
+                                Дата: ${new Date(file.date).toLocaleString('ru-RU')}
+                            </div>
+                        </div>
+                        <div class="result-actions">
+                            <a href="/wikipedia/download/${encodeURIComponent(file.name)}" class="btn-download-small" onclick="event.stopPropagation()">📥 Скачать</a>
+                        </div>
+                    </div>
+                `;
+                }).join('');
+            } catch (error) {
+                console.error('Ошибка при загрузке сохраненных статей:', error);
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        async function loadArticle(title, full = false) {
+            const articleSection = document.getElementById('articleSection');
+            const articleTitle = document.getElementById('articleTitle');
+            const articleText = document.getElementById('articleText');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const loadFullBtn = document.getElementById('loadFullBtn');
+
+            articleSection.style.display = 'block';
+            articleTitle.textContent = 'Загрузка...';
+            articleText.textContent = '';
+            downloadBtn.disabled = true;
+            loadFullBtn.disabled = true;
+            currentArticle = title;
+
+            try {
+                const url = `/api/wikipedia/article?title=${encodeURIComponent(title)}${full ? '&full=true' : ''}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const pages = data.query.pages;
+                const pageId = Object.keys(pages)[0];
+                const page = pages[pageId];
+
+                if (page.missing) {
+                    articleTitle.textContent = 'Статья не найдена';
+                    articleText.textContent = 'К сожалению, эта статья не существует в Wikipedia.';
+                    return;
+                }
+
+                articleTitle.textContent = page.title;
+                // Форматируем текст статьи
+                let text = page.extract || 'Содержимое статьи недоступно.';
+                // Добавляем ссылку на оригинальную статью
+                const wikiUrl = `https://ru.wikipedia.org/wiki/${encodeURIComponent(title)}`;
+                text += `\n\n---\n📖 Оригинальная статья: ${wikiUrl}`;
+                
+                articleText.textContent = text;
+                downloadBtn.disabled = false;
+                loadFullBtn.disabled = false;
+                loadFullBtn.style.display = full ? 'none' : 'inline-block';
+
+                // Прокрутка к статье
+                articleSection.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                articleTitle.textContent = 'Ошибка';
+                articleText.textContent = 'Не удалось загрузить статью.';
+                showMessage('Ошибка при загрузке статьи', 'error');
+            }
+        }
+
+        async function loadFullArticle() {
+            if (!currentArticle) {
+                showMessage('Статья не выбрана', 'error');
+                return;
+            }
+            await loadArticle(currentArticle, true);
+        }
+
+        async function downloadArticle() {
+            if (!currentArticle) {
+                showMessage('Статья не выбрана', 'error');
+                return;
+            }
+
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = 'Сохранение...';
+
+            try {
+                const response = await fetch(`/api/wikipedia/download?title=${encodeURIComponent(currentArticle)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('Статья успешно сохранена! Вы можете скачать её на главной странице.', 'success');
+                    // Автоматически скачиваем файл
+                    window.location.href = data.downloadUrl;
+                } else {
+                    showMessage(data.error || 'Ошибка при сохранении статьи', 'error');
+                }
+            } catch (error) {
+                showMessage('Ошибка при сохранении статьи', 'error');
+            } finally {
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = 'Скачать статью';
+            }
+        }
+
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type}`;
+            message.style.display = 'block';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 5000);
+        }
+
+        // Загружаем сохраненные статьи при загрузке страницы
+        loadSavedArticles();
+    </script>
+</body>
+</html>
+
